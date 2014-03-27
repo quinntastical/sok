@@ -6,17 +6,20 @@
 Engine::Engine()
 {
 	TCODConsole::setCustomFont("font.png", TCOD_FONT_LAYOUT_ASCII_INROW,16,16);
-	TCODConsole::initRoot(40,25,"sok",false);
+	TCODConsole::initRoot(50,25,"sok",false);
 
-    pl_actor = new Player(20,10,'@',TCODColor::white);
-	pl_actor_list.push(pl_actor);
+	gameArea = new Map(50,20); // najpierw za³aduj mapê
+
+	pl_actor = pl_actor_list.get(0);
+
     //actors.push(new Actor(60,13,'@',TCODColor::yellow));
-    map = new Map(40,25);
+    
 }
 Engine::~Engine()
 {
-	//actors.clearAndDelete();
-	delete map;
+	pl_actor_list.clearAndDelete();
+	bulb_actor_list.clearAndDelete();
+	delete gameArea;
 }
 
 void Engine::Update()
@@ -25,22 +28,23 @@ void Engine::Update()
     TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS,&key,NULL);
     switch(key.vk) {
         case TCODK_UP : 
-            if ( ! map->isWall(pl_actor->x,pl_actor->y-1)) {
+			if (gameArea->map->isWalkable(pl_actor->x,pl_actor->y-1)) {
                 pl_actor->y--;   
             }
         break;
         case TCODK_DOWN : 
-            if ( ! map->isWall(pl_actor->x,pl_actor->y+1)) {
+            if (gameArea->map->isWalkable(pl_actor->x,pl_actor->y+1)) {
                 pl_actor->y++;
             }
         break;
         case TCODK_LEFT : 
-            if ( ! map->isWall(pl_actor->x-1,pl_actor->y)) {
+            if (gameArea->map->isWalkable(pl_actor->x-1,pl_actor->y)) {
                 pl_actor->x--;
+				
             }
         break;
         case TCODK_RIGHT : 
-            if ( ! map->isWall(pl_actor->x+1,pl_actor->y)) {
+            if (gameArea->map->isWalkable(pl_actor->x+1,pl_actor->y)) {
                 pl_actor->x++;
             }
         break;
@@ -52,10 +56,14 @@ void Engine::Render()
 	TCODConsole::root->clear();
 
 	//rysuj mape gry
-	map->Render();
+	gameArea->Render();
 	//rysuj gniazda na zarowki
 
 	//rysuj gracza
 	pl_actor->Render();
 	//rysuj zarowki
+	for (Bulb **iterator=bulb_actor_list.begin(); 
+    iterator != bulb_actor_list.end(); iterator++) {
+    (*iterator)->Render();
+}
 }

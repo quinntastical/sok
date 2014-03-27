@@ -1,22 +1,13 @@
 #ifndef MAP_CLASS_HEADER
 #define MAP_CLASS_HEADER
-
-struct Tile {
-    bool canWalk; // can we walk through this tile?
-    Tile() : canWalk(true) {}
-};
+#include <libtcod.hpp>
  
 class Map {
-public :
+public:
     int width,height;
- 
+	TCODMap *map;
     Map(int width, int height);
     ~Map();
-    bool isWall(int x, int y) const;
     void Render() const;
-protected :
-    Tile *tiles;
- 
-    void setWall(int x, int y);
 };
 #endif
